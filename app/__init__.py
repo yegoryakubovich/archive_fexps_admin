@@ -18,13 +18,14 @@
 from flask import Flask
 from flask_login import LoginManager
 
-from app.login import AdminLogin
+from app.blueprint_orders import blueprint_orders
 from app.blueprint_login import blueprint_login
 from app.blueprint_main import blueprint_main
+from app.login import AdminLogin
 from config import SECRET_KEY
 
 
-blueprints = [blueprint_main, blueprint_login]
+blueprints = [blueprint_main, blueprint_login, blueprint_orders]
 
 
 def blueprints_register(app):
