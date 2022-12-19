@@ -15,7 +15,13 @@
 #
 
 
-flask
-flask_login
-peewee
-pymysql
+from os import getenv
+
+
+DB_HOST = getenv('DB_HOST')
+DB_PORT = int(getenv('DB_PORT'))
+DB_USER = getenv('DB_USER')
+DB_PASSWORD = getenv('DB_PASSWORD')
+DB_NAME = getenv('DB_NAME')
+
+SECRET_KEY = getenv('SECRET_KEY')

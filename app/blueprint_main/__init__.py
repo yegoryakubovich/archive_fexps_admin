@@ -15,7 +15,12 @@
 #
 
 
-flask
-flask_login
-peewee
-pymysql
+from flask import Blueprint, render_template
+
+
+blueprint_main = Blueprint('blueprint_main', __name__, template_folder='templates')
+
+
+@blueprint_main.route("/")
+def home():
+    return render_template('main.html')
