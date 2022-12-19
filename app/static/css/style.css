@@ -1,0 +1,46 @@
+/* Base settings */
+:root {
+  --color_main: #1f1f1f;
+  --color_bg: #ffe600;
+  --color_additional: #565656;
+}
+
+body {
+  font-family: 'Montserrat Alternates', sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  color: var(--color_main);
+  background: var(--color_bg);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+}
+
+*,
+*:before,
+*:after{
+  box-sizing: border-box;
+}
+
+::selection {
+background: var(--color_additional);
+}
+::-moz-selection {
+background: var(--color_additional);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1170px;
+  margin: 0 auto;
+}
