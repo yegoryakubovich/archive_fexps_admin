@@ -25,3 +25,7 @@ DB_PASSWORD = getenv('DB_PASSWORD')
 DB_NAME = getenv('DB_NAME')
 
 SECRET_KEY = getenv('SECRET_KEY')
+IS_DEBUG = bool(getenv('IS_DEBUG'))
+
+DOCS_PATH = getenv('DOCS_PATH')
+ADMINS_DOCS_PATH = getenv('ADMINS_DOCS_PATH')

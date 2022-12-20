@@ -20,7 +20,7 @@
 /* Base settings */
 :root {
   --color_main: #1f1f1f;
-  --color_bg: #cbc142;
+  --color_bg: #ffffff;
   --color_additional: #565656;
 }
 
@@ -54,6 +54,20 @@ background: var(--color_additional);
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
+}
+
+hr {
+  margin: 8px 0;
+  padding: 0;
+  height: 0;
+  border: none;
+  border-top: 1px solid var(--color_additional);
+}
+
+iframe {
+  width: 100vh;
+  height: 500px;
+  border:none
 }
 
 

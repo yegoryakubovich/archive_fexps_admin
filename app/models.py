@@ -20,7 +20,6 @@ from peewee import MySQLDatabase, Model, PrimaryKeyField, CharField, BigIntegerF
 
 from config import DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
 
-
 db = MySQLDatabase(DB_NAME, user=DB_USER, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT, charset='utf8mb4')
 
 
@@ -122,3 +121,13 @@ class Admin(BaseModel):
 
     class Meta:
         db_table = "admins"
+
+
+class AdminDoc(BaseModel):
+    id = PrimaryKeyField()
+    admin = ForeignKeyField(Admin, to_field='id', on_delete='cascade')
+    order = ForeignKeyField(Order, to_field='id', on_delete='cascade')
+    extension = CharField(max_length=8)
+
+    class Meta:
+        db_table = "admins_docs"

@@ -23,12 +23,31 @@
 {% block body %}
 
 <div class="container">
-    <img src="{{ url_for('static', filename='static/{}.{}'.format(order.doc.id, order.doc.extension)) }}" alt="">
-    <div class="title">
-        {{ order.currency_exchangeable_value }} {{ order.currency_exchangeable.name }}<br>
-        {{ order.currency_requisite.name }}<br>
-        {{ order.currency_requisite.requisite }}<br>
-    </div>
+    <iframe src="{{ doc_path }}"></iframe>
+    <hr>
+    {{ order.currency_exchangeable_value }}
+    {{ order.currency_exchangeable.name }}
+    <hr>
+    {{ order.currency_requisite.name }}<br><br>
+    {{ order.currency_requisite.requisite }}
+    <hr>
+    {% if not order.is_paid %}
+        <form action="{{ '{}/confirm'.format(order.id) }}" method="post" class="form-contact">
+            <div class="button"><input type="submit" value="Confirm" /></div>
+        </form>
+        <form action="{{ '{}/reject'.format(order.id) }}" method="post" class="form-contact">
+            <div class="button"><input type="submit" value="Reject" /></div>
+        </form>
+    {% else %}
+        Order confirmed, files:
+        <form action="{{ '{}/save'.format(order.id) }}" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" /><br>
+            <br><div class="button"><input type="submit" value="Save changes" /></div>
+        </form>
+        {% for admin_doc in admins_docs %}
+            <iframe src="{{ admin_doc }}"></iframe>
+        {% endfor %}
+    {% endif %}
 </div>
 
 {% endblock %}
