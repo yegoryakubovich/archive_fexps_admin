@@ -29,3 +29,14 @@ IS_DEBUG = bool(getenv('IS_DEBUG'))
 
 DOCS_PATH = getenv('DOCS_PATH')
 ADMINS_DOCS_PATH = getenv('ADMINS_DOCS_PATH')
+
+TG_KEY = getenv('TG_KEY')
+TG_GROUP = getenv('TG_GROUP')
+
+
+class Texts:
+    notification_order_payment_confirmed = 'Мы проверили оплату - она прошла. Ожидайте исполнения заказа!'
+    notification_order_payment_rejected = 'Мы проверили оплату - она НЕ прошла. Пожалуйста, повторите попытку ' \
+                                          'создания заказа и оплаты! Если нужна помощь - напишите в нашу поддержку.'
+    notification_admins_order_payment_rejected = 'Оплата по заказу №{} ОТКЛОНЕНА.'
+    notification_admins_order_payment_confirmed = 'Оплата по заказу №{} ПРИНЯТА.'

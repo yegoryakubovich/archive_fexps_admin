@@ -15,9 +15,14 @@
 #
 
 
-flask
-flask_login
-peewee
-pymysql
-pytelegrambotapi
-adecty_design==0.1.0
+from os.path import dirname, realpath
+
+
+def icon_get(name: str):
+    path = dirname(realpath(__file__))
+    return open('{path}/icons/{name}.svg'.format(path=path, name=name), 'r').read()
+
+
+class Icons:
+    logo = icon_get('logo')
+    orders = icon_get('orders')

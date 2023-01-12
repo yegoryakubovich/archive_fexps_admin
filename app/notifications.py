@@ -15,9 +15,14 @@
 #
 
 
-flask
-flask_login
-peewee
-pymysql
-pytelegrambotapi
-adecty_design==0.1.0
+# noinspection PyPackageRequirements
+from telebot import TeleBot
+
+from config import TG_GROUP, TG_KEY
+
+
+bot = TeleBot(TG_KEY)
+
+
+def notification_send(text: str, chat_id=TG_GROUP):
+    bot.send_message(chat_id, text)

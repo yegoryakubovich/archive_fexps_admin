@@ -13,14 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+from adecty_design.elements.form import Form
+from adecty_design.elements.input import Input, InputTypes
+from adecty_design.elements.page import Page
+from adecty_design.elements.screen import Screen
+from adecty_design.elements.text import Text
 from flask import Blueprint, render_template, redirect, request
 from flask_login import login_required, logout_user, login_user
 
+from app.adecty_design import config, ad
 from app.models import Admin
 from app.login import AdminLogin
-
 
 blueprint_login = Blueprint('blueprint_login', __name__, template_folder='templates')
 
@@ -35,7 +38,23 @@ def admin_login():
             login_user(AdminLogin().create(admin))
             return redirect('/orders')
 
-    return render_template('login.html')
+    page = Page(
+        title='Авторизация',
+        screens=[
+            Screen(elements=[
+                Form(elements=[
+                    Text(color=config.colors.primary, font=config.fonts.main, text='Логин', font_size=18),
+                    Input(input_type=InputTypes.text, name='login'),
+                    Text(color=config.colors.primary, font=config.fonts.main, text='Пароль', font_size=18),
+                    Input(input_type=InputTypes.text, name='password'),
+                    Input(input_type=InputTypes.button, text='Логин'),
+                ])
+            ])
+        ],
+    )
+    html = ad.get_page_html(page)
+
+    return html
 
 
 @blueprint_login.route("/logout", methods=['GET'])

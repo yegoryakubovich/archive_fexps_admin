@@ -15,9 +15,15 @@
 #
 
 
-flask
-flask_login
-peewee
-pymysql
-pytelegrambotapi
-adecty_design==0.1.0
+from adecty_design.elements.colors import Colors
+
+
+colors = Colors(
+    background='#fff',
+    background_secondary='#e0e0e0',
+    primary='#804d00',
+    text='#1a1a1a',
+    selected='#f2db85',
+    unselected='#303030',
+    error='#e05555'
+)

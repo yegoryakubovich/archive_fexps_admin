@@ -15,9 +15,17 @@
 #
 
 
-flask
-flask_login
-peewee
-pymysql
-pytelegrambotapi
-adecty_design==0.1.0
+from adecty_design.elements.config import Config
+
+from app.adecty_design.colors import colors
+from app.adecty_design.fonts import fonts
+from app.adecty_design.icons import Icons
+
+
+config = Config(
+    colors=colors,
+    fonts=fonts,
+    logo=Icons.logo,
+    name='Finance Express - Admin',
+    rounding=6
+)
