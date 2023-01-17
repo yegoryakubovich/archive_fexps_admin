@@ -28,7 +28,7 @@ from app.adecty_design import config, ad
 blueprint_main = Blueprint('blueprint_main', __name__, template_folder='templates')
 
 
-@blueprint_main.route("/")
+@blueprint_main.route('/')
 def home():
     page = Page(screens=[Screen(elements=[
         Text(font=config.fonts.main, text='Привет, мир!', font_size=24),

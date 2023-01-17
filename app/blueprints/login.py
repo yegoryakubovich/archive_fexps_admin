@@ -28,7 +28,7 @@ from app.login import AdminLogin
 blueprint_login = Blueprint('blueprint_login', __name__, template_folder='templates')
 
 
-@blueprint_login.route("/login", methods=['POST', 'GET'])
+@blueprint_login.route('/login', methods=['POST', 'GET'])
 def admin_login():
     if request.method == 'POST':
         login = request.form['login']
@@ -36,7 +36,7 @@ def admin_login():
         admin = Admin.get_or_none((Admin.login == login) & (Admin.password == password))
         if admin:
             login_user(AdminLogin().create(admin))
-            return redirect('/orders')
+            return redirect('/')
 
     page = Page(
         title='Авторизация',
@@ -57,7 +57,7 @@ def admin_login():
     return html
 
 
-@blueprint_login.route("/logout", methods=['GET'])
+@blueprint_login.route('/logout', methods=['GET'])
 @login_required
 def admin_logout():
     logout_user()

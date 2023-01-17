@@ -29,6 +29,17 @@ class BaseModel(Model):
         database = db
 
 
+class Admin(BaseModel):
+    id = PrimaryKeyField()
+    login = CharField(max_length=32)
+    password = CharField(max_length=64)
+    permission_orders = BooleanField(default=False)
+    permission_requisites = BooleanField(default=False)
+
+    class Meta:
+        db_table = 'admins'
+
+
 class Currency(BaseModel):
     id = PrimaryKeyField()
     name = CharField(max_length=16)
@@ -60,6 +71,7 @@ class RequisiteExchangeable(BaseModel):
 class RequisiteReceived(BaseModel):
     id = PrimaryKeyField()
     currency = ForeignKeyField(Currency, to_field='id', on_delete='cascade', null=True, default=None)
+    admin = ForeignKeyField(Admin, to_field='id', on_delete='cascade')
     name = CharField(max_length=64)
     requisite = CharField(max_length=1024)
 
@@ -116,6 +128,8 @@ class Order(BaseModel):
     doc = ForeignKeyField(Doc, to_field='id', on_delete='cascade', null=True, default=None)
     is_paid = BooleanField(default=False)
     is_completed = BooleanField(default=False)
+    commission_rub = CharField(max_length=64, null=True, default=None)
+    received_usdt = CharField(max_length=64, null=True, default=None)
     datetime = DateTimeField()
     datetime_paid = DateTimeField(null=True, default=None)
     datetime_completed = DateTimeField(null=True, default=None)
@@ -123,17 +137,6 @@ class Order(BaseModel):
 
     class Meta:
         db_table = 'orders'
-
-
-class Admin(BaseModel):
-    id = PrimaryKeyField()
-    login = CharField(max_length=32)
-    password = CharField(max_length=64)
-    permission_orders = BooleanField(default=False)
-    permission_payments = BooleanField(default=False)
-
-    class Meta:
-        db_table = 'admins'
 
 
 class AdminDoc(BaseModel):

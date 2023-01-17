@@ -37,6 +37,8 @@ def bp_requisites():
     requisites = []
 
     for requisite in RequisiteReceived.select():
+        if not admin.permission_requisites and requisite.admin != admin:
+            continue
         requisite: RequisiteReceived
         requisites.append([
             requisite.name,
@@ -63,6 +65,9 @@ def bp_requisites():
 def bp_requisite(requisite_id):
     requisite = RequisiteReceived.get_or_none(RequisiteReceived.id == requisite_id)
     admin = current_user.admin
+
+    if not admin.permission_requisites and requisite.admin != admin:
+        return redirect('/requisites')
 
     if not requisite:
         return 401
