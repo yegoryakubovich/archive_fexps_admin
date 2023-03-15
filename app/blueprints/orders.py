@@ -16,8 +16,8 @@
 
 
 from datetime import datetime
-from os.path import join
 
+from adecty_design.elements.button import Button
 from adecty_design.elements.dictionary import Dictionary
 from adecty_design.elements.form import Form
 from adecty_design.elements.input import Input, InputTypes
@@ -31,10 +31,10 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
 from app.adecty_design import config, ad
+from app.forms.forms import form_send
 from app.models import Order, AdminDoc
 from app.notifications import notification_send
 from config import DOCS_PATH, ADMINS_DOCS_PATH, Texts, TG_GROUP
-
 
 blueprint_orders = Blueprint('blueprint_orders', __name__, template_folder='templates')
 status = {
@@ -96,22 +96,22 @@ def bp_order(order_id):
         return redirect('/orders')
 
     if request.method == 'POST':
-        commission_rub = request.form['commission_rub']
         received_usdt = request.form['received_usdt']
-        file = request.files['file']
+        file_1 = request.files['file_1']
+        file_2 = request.files['file_2']
 
-        if not commission_rub or not received_usdt or not file:
+        if not received_usdt or not file_1 or not file_2:
             return redirect('/orders/{order_id}'.format(order_id=order.id))
 
-        filename = secure_filename(file.filename)
+        for f in [file_1, file_2]:
+            filename = secure_filename(f.filename)
 
-        extension = filename.split('.')[-1]
-        admin_doc = AdminDoc(admin=admin, order=order, extension=extension)
-        admin_doc.save()
+            extension = filename.split('.')[-1]
+            admin_doc = AdminDoc(admin=admin, order=order, extension=extension)
+            admin_doc.save()
 
-        file.save('{}/{}.{}'.format(ADMINS_DOCS_PATH, admin_doc.id, admin_doc.extension))
+            f.save('{}/{}.{}'.format(ADMINS_DOCS_PATH, admin_doc.id, admin_doc.extension))
 
-        order.commission_rub = commission_rub
         order.received_usdt = received_usdt
         order.is_completed = True
         order.is_closed = True
@@ -123,55 +123,55 @@ def bp_order(order_id):
 
     doc_path = '{}/{}.{}'.format(DOCS_PATH, order.doc.id, order.doc.extension)
     admin_doc = AdminDoc.get_or_none(AdminDoc.order == order)
-    admin_doc_path = '{}/{}.{}'.format(ADMINS_DOCS_PATH, admin_doc.id, admin_doc.extension) if admin_doc else None
+    admin_doc_path = '{}/{}.{}'.format(DOCS_PATH + '/admins', admin_doc.id, admin_doc.extension) if admin_doc else None
     order_status = 'Ожидает проверки оплаты'
     if order.is_completed and order.is_closed:
         order_status = 'Исполнен, закрыт'
     elif order.is_paid:
         order_status = 'В исполнении'
+
+    keys = ['ID заказа', 'Клиент', 'Сделка на', 'Курс', 'Реквизит получения', 'Описание к реквизиту получения',
+            'Реквизит оплаты', 'Прикрепленный документ', 'Комиссия в RUB', 'Отправлено в USDT',
+            'Документ администратора', 'Статус заказа'] if admin.permission_orders else \
+        ['Сделка на', 'Реквизит оплаты', 'Прикрепленный документ',
+         'Комиссия в RUB', 'Отправлено в USDT', 'Документ администратора', 'Статус заказа']
+
+    values_permission = [str(order.id), order.customer.name, '{}{} -> {}{}'.format(
+        order.currency_exchangeable_value,
+        order.direction.currency_exchangeable.name,
+        order.currency_received_value,
+        order.direction.currency_received.name
+    ), str(order.rate), order.requisite_exchangeable.name if order.requisite_exchangeable else 'Not required',
+                         order.requisite_exchangeable_value if order.requisite_exchangeable_value else 'Not required',
+                         order.requisite_received.name,
+                         Url(elements=[Text('Просмотреть документ от пользователя')], url=doc_path),
+                         str(order.commission_rub), str(order.received_usdt),
+                         Url(elements=[Text('Просмотреть документ от администратора')], url=admin_doc_path) if admin_doc
+                         else 'Документ еще не прикреплен',
+                         order_status]
+    values = [
+        '{}{} -> {}{}'.format(order.currency_exchangeable_value, order.direction.currency_exchangeable.name,
+                              order.currency_received_value, order.direction.currency_received.name),
+        order.requisite_received.name, Url(elements=[Text('Просмотреть документ от пользователя')], url=doc_path),
+        str(order.commission_rub), str(order.received_usdt),
+        Url(elements=[Text('Просмотреть документ от администратора')], url=admin_doc_path) if admin_doc
+        else 'Документ еще не прикреплен',
+        order_status
+    ]
+
     elements = [
         Text(font=config.fonts.main, text='Информация о заказе №{}'.format(order.id), font_size=24),
-        Dictionary(keys=['ID заказа', 'Клиент', 'Сделка на', 'Курс', 'Реквизит получения',
-                         'Описание к реквизиту получения', 'Реквизит оплаты', 'Прикрепленный документ',
-                         'Комиссия в RUB', 'Отправлено в USDT', 'Документ администратора',
-                         'Статус заказа'],
-                   values=[
-                       str(order.id),
-                       order.customer.name,
-                       '{}{} -> {}{}'.format(
-                           order.currency_exchangeable_value,
-                           order.direction.currency_exchangeable.name,
-                           order.currency_received_value,
-                           order.direction.currency_received.name
-                       ),
-                       str(order.rate),
-                       order.requisite_exchangeable.name,
-                       order.requisite_exchangeable_value,
-                       order.requisite_received.name,
-                       Url(elements=[Text('Просмотреть документ от пользователя')], url=doc_path),
-                       str(order.commission_rub),
-                       str(order.received_usdt),
-                       Url(elements=[Text('Просмотреть документ от администратора')], url=admin_doc_path) if admin_doc
-                       else 'Документ еще не прикреплен',
-                       order_status
-                   ]),
+        Dictionary(keys=keys, values=values_permission if admin.permission_orders else values),
     ]
     if not order.is_paid:
-        elements.append(Url(elements=[Text('Подтвердить заказ')], url='{}/confirm'.format(order.id)))
-        elements.append(Url(elements=[Text('Отклонить заказ')], url='{}/reject'.format(order.id)))
-    elif not order.commission_rub or not order.received_usdt or not admin_doc or admin.permission_orders:
+        elements.append(Button(value='Подтвердить оплату', url='{}/confirm'.format(order.id)))
+        elements.append(Button(value='Отклонить оплату', url='{}/reject'.format(order.id)))
+    elif not order.received_usdt or not admin_doc or admin.permission_orders:
         elements.append(
             Form(elements=[
-                Text(font=config.fonts.main, text='Прикрепить файл', font_size=18),
-                Input(
-                    input_type=InputTypes.file, name='file',
-                    value=order.commission_rub if order.received_usdt else ''
-                ),
-                Text(font=config.fonts.main, text='Комиссия в RUB', font_size=18),
-                Input(
-                    input_type=InputTypes.text, name='commission_rub',
-                    value=order.commission_rub if order.commission_rub else ''
-                ),
+                Text(font=config.fonts.main, text='Прикрепить файлы', font_size=18),
+                Input(input_type=InputTypes.file, name='file_1',),
+                Input(input_type=InputTypes.file, name='file_2', ),
                 Text(font=config.fonts.main, text='Отправлено в USDT', font_size=18),
                 Input(
                     input_type=InputTypes.text, name='received_usdt',
@@ -204,7 +204,18 @@ def bp_order_confirm(order_id):
     order.save()
 
     # Notification to user & admins
-    notification_send(chat_id=order.customer.user_id, text=Texts.notification_order_payment_confirmed)
+    if order.requisite_exchangeable is None:
+        notification_send(
+            chat_id=order.customer.user_id,
+            text=Texts.bridge_notification_order_payment_confirmed,
+            is_bridge=True,
+        )
+        form_send(name=order.customer.name, value=order.currency_received_value, datetime_paid=order.datetime_paid)
+    else:
+        notification_send(
+            chat_id=order.customer.user_id,
+            text=Texts.notification_order_payment_confirmed,
+        )
     notification_send(chat_id=TG_GROUP, text=Texts.notification_admins_order_payment_confirmed.format(order.id))
 
     return redirect('/orders/{}'.format(order.id))
@@ -226,7 +237,18 @@ def bp_order_reject(order_id):
     order.save()
 
     # Notification to user & admins
-    notification_send(chat_id=order.customer.user_id, text=Texts.notification_order_payment_rejected)
+    if order.requisite_exchangeable is None:
+        notification_send(
+            chat_id=order.customer.user_id,
+            text=Texts.bridge_notification_order_payment_rejected,
+            is_bridge=True,
+        )
+    else:
+        notification_send(
+            chat_id=order.customer.user_id,
+            text=Texts.notification_order_payment_rejected,
+        )
+
     notification_send(chat_id=TG_GROUP, text=Texts.notification_admins_order_payment_rejected.format(order.id))
 
     return redirect('/orders/{}'.format(order.id))

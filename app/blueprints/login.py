@@ -13,12 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 from adecty_design.elements.form import Form
 from adecty_design.elements.input import Input, InputTypes
 from adecty_design.elements.page import Page
 from adecty_design.elements.screen import Screen
 from adecty_design.elements.text import Text
-from flask import Blueprint, render_template, redirect, request
+from flask import Blueprint, redirect, request
 from flask_login import login_required, logout_user, login_user
 
 from app.adecty_design import config, ad

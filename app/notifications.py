@@ -18,11 +18,15 @@
 # noinspection PyPackageRequirements
 from telebot import TeleBot
 
-from config import TG_GROUP, TG_KEY
+from config import TG_GROUP, TG_KEY, TG_BRIDGE_KEY
 
 
 bot = TeleBot(TG_KEY)
+bot_bridge = TeleBot(TG_BRIDGE_KEY)
 
 
-def notification_send(text: str, chat_id=TG_GROUP):
+def notification_send(text: str, chat_id=TG_GROUP, is_bridge=False):
+    if is_bridge:
+        bot_bridge.send_message(chat_id, text)
+        return
     bot.send_message(chat_id, text)
